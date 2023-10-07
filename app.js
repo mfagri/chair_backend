@@ -156,7 +156,17 @@ async function loadIcons() {
   };
   return icons;
 }
-
+const product1 = {
+  id :1,
+  name: "Classic Wooden Chair",
+  category: "Wooden Chairs",
+  color: ["black","white","red","gray"],
+  price: 99.99,
+  images:["https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg","https://i.pinimg.com/474x/88/8c/49/888c49267816f53c3806f7d561fb9b86.jpg","https://i.pinimg.com/564x/b9/6c/48/b96c48e3eb737985743a78593eabaf43.jpg","https://i.pinimg.com/474x/c9/e5/a3/c9e5a38fce41ebc13bb92fbac9cf3cb6.jpg"],
+  is3d:true,
+  modules:[],
+  
+}
 
 /**
  * @swagger
@@ -173,35 +183,76 @@ app.get("/api/categories", async (req, res) => {
   categories = [
     {
       name: "Wooden",
-      icon:  icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon wooden
+      icon:  icons["wooden-chair-chair-svgrepo-com"],
+       // Replace with the actual SVG icon wooden
+       produxts:[
+        product1,
+        product1,
+        product1,
+       ]
     },
     {
       name: "Sofa",
       icon:  icons["sofa-free-4-svgrepo-com"], // Replace with the actual SVG icon wooden
+      produxts:[
+        product1,
+        product1,
+        product1,
+       ]
     },
     {
       name: "Armchair",
       icon: icons["armchair-2-svgrepo-com"], // Replace with the actual SVG icon for metal
+      produxts:[
+        product1,
+        product1,
+        product1,
+       ]
     },
     {
       name: "Deck",
       icon: icons["deck-chair-svgrepo-com"], // Replace with the actual SVG icon for plastic
+      produxts:[
+        product1,
+        product1,
+        product1,
+       ]
     },
     {
       name: "Desk",
       icon: icons["desk-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for office
+      produxts:[
+        product1,
+        product1,
+        product1,
+       ]
     },
     {
       name: "Dining",
       icon: icons["chair-dining-svgrepo-com"], // Replace with the actual SVG icon for dining
+      produxts:[
+        product1,
+        product1,
+        product1,
+       ]
     },
     {
       name: "Wing",
-      icon: icons["wing-chair-svgrepo-com"], // Replace with the actual SVG icon for lounge
+      icon: icons["wing-chair-svgrepo-com"],
+      produxts:[
+        product1,
+        product1,
+        product1,
+       ] // Replace with the actual SVG icon for lounge
     },
     {
       name: "Student",
-      icon: icons["student-chair-with-desk-svgrepo-com"], // Replace with the actual SVG icon for outdoor chairs
+      icon: icons["student-chair-with-desk-svgrepo-com"],
+      produxts:[
+        product1,
+        product1,
+        product1,
+       ] // Replace with the actual SVG icon for outdoor chairs
     },
     // Add more categories as needed
   ];
