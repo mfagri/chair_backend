@@ -2,10 +2,11 @@ const express = require("express");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const expressSession = require("express-session");
-const swaggerUi = require('swagger-ui-express');
-const swaggerJSDoc = require('swagger-jsdoc');
-require('dotenv').config();
+const swaggerUi = require("swagger-ui-express");
+const swaggerJSDoc = require("swagger-jsdoc");
+require("dotenv").config();
 const path = require("path");
+const fs = require("fs").promises; 
 const app = express();
 
 const clientid = process.env.clientID;
@@ -69,7 +70,7 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 // ...
 
 // Use Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ...
 
@@ -139,39 +140,14 @@ app.get("/api/products", (req, res) => {
   // Handle GET request for products
   res.json({ message: "Get products" });
 });
+async function loadIcons() {
+  const icons = {
+    "wooden-chair-chair-svgrepo-com": await iconGenerate("wooden-chair-chair-svgrepo-com"),
+    // Add more icons as needed
+  };
+  return icons;
+}
 
-
-const categories = [
-  {
-    name: "Wooden Chairs",
-    icon: "wooden-chair-chair-svgrepo-com.svg", // Replace with the actual SVG icon for wooden chairs
-  },
-  {
-    name: "Metal Chairs",
-    icon: "wooden-chair-chair-svgrepo-com.svg", // Replace with the actual SVG icon for metal chairs
-  },
-  {
-    name: "Plastic Chairs",
-    icon: "wooden-chair-chair-svgrepo-com.svg", // Replace with the actual SVG icon for plastic chairs
-  },
-  {
-    name: "Office Chairs",
-    icon: "wooden-chair-chair-svgrepo-com.svg", // Replace with the actual SVG icon for office chairs
-  },
-  {
-    name: "Dining Chairs",
-    icon: "wooden-chair-chair-svgrepo-com.svg", // Replace with the actual SVG icon for dining chairs
-  },
-  {
-    name: "Lounge Chairs",
-    icon: "wooden-chair-chair-svgrepo-com.svg", // Replace with the actual SVG icon for lounge chairs
-  },
-  {
-    name: "Outdoor Chairs",
-    icon: "wooden-chair-chair-svgrepo-com.svg", // Replace with the actual SVG icon for outdoor chairs
-  },
-  // Add more categories as needed
-];
 
 /**
  * @swagger
@@ -183,11 +159,39 @@ const categories = [
  *       200:
  *         description: Returns a JSON response with categories information.
  */
-app.get("/api/categories", (req, res) => {
-  // Create an array to store category data (excluding SVG icons)
-  const categoryData = categories.map((category) => ({
-    name: category.name,
-  }));
+app.get("/api/categories", async (req, res) => {
+  const icons = await loadIcons();
+  categories = [
+    {
+      name: "Wooden Chairs",
+      icon:  icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon wooden chairs
+    },
+    {
+      name: "Metal Chairs",
+      icon: icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for metal chairs
+    },
+    {
+      name: "Plastic Chairs",
+      icon: icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for plastic chairs
+    },
+    {
+      name: "Office Chairs",
+      icon: icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for office chairs
+    },
+    {
+      name: "Dining Chairs",
+      icon: icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for dining chairs
+    },
+    {
+      name: "Lounge Chairs",
+      icon: icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for lounge chairs
+    },
+    {
+      name: "Outdoor Chairs",
+      icon: icons["wooden-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for outdoor chairs
+    },
+    // Add more categories as needed
+  ];
 
   res.json(categories);
 });
@@ -211,7 +215,30 @@ app.listen(port, () => {
 app.get("/api/icons/:iconName", (req, res) => {
   const { iconName } = req.params;
   const iconFileName = `${iconName}.svg`;
+  const iconFilePath = path.join(__dirname, "icons", iconFileName);
 
-  // Send the SVG icon file as a response
-  res.sendFile(path.join(__dirname, "icons", iconFileName));
+  // Read the SVG icon file as a string
+  fs.readFile(iconFilePath, "utf8", (err, data) => {
+    if (err) {
+      // Handle any errors (e.g., file not found)
+      res.status(404).send("Icon not found");
+    } else {
+      // Send the SVG icon content as a response
+     
+      res.send(data);
+    }
+  });
 });
+
+async function iconGenerate(iconName) {
+  const iconFileName = `${iconName}.svg`;
+  const iconFilePath = path.join(__dirname, "icons", iconFileName);
+  
+  try {
+    const data = await fs.readFile(iconFilePath, "utf8");
+    return data.toString();
+  } catch (err) {
+    console.error("Error reading SVG file:", err);
+    return ""; // Return an empty string or some default value in case of an error
+  }
+}
