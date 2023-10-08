@@ -85,7 +85,7 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 //   },
 // });
 // const upload = multer({ storage });
-app.use('/icons/', express.static('icons'));
+// app.use('/icons/', express.static('icons'));
 //
 app.use('/uploads', express.static('uploads'));
 // Use Swagger documentation
