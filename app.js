@@ -15,6 +15,8 @@ const clientid = process.env.clientID;
 const secret = process.env.clientSecret;
 const { addCategory } = require('./models/category.model.js');
 const {getCategorys} = require('./models/category.model.js');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 // Define your Swagger options
 const swaggerOptions = {
@@ -72,19 +74,20 @@ passport.deserializeUser((user, done) => {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // ...
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './icons/'); // Uploads will be stored in the "uploads" directory
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const extension = path.extname(file.originalname);
-    cb(null, `${timestamp}${extension}`);
-  },
-});
-const upload = multer({ storage });
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, './icons/'); // Uploads will be stored in the "uploads" directory
+//   },
+//   filename: (req, file, cb) => {
+//     const timestamp = Date.now();
+//     const extension = path.extname(file.originalname);
+//     cb(null, `${timestamp}${extension}`);
+//   },
+// });
+// const upload = multer({ storage });
 app.use('/icons/', express.static('icons'));
 //
+app.use('/uploads', express.static('uploads'));
 // Use Swagger documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -141,7 +144,47 @@ app.get("/dashboard", (req, res) => {
   // Display the user's dashboard.
   res.send(`Welcome, ${req.user.displayName}!`);
 });
-app.post('/addCategory', addCategory);
+// app.post('/addCategory', addCategory);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads/'); // Uploads will be stored in the "uploads" directory
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const extension = path.extname(file.originalname);
+    cb(null, `${timestamp}${extension}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// Serve static files in the "uploads" directory (optional)
+app.use('/uploads', express.static('uploads'));
+
+// Set up a route for uploading files and adding a category
+app.post('/addCategory', upload.single('icon'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+
+    const { name } = req.body;
+    const iconFilename = req.file.filename; // Get the filename of the uploaded icon
+
+    // Use Prisma or your ORM to create a new category with a reference to the uploaded icon
+    const category = await prisma.category.create({
+      data: {
+        name,
+        icon: `/uploads/${iconFilename}`, // Store the file path in the database
+      },
+    });
+
+    return res.json(category);
+  } catch (error) {
+    console.error('Error adding category:', error);
+    return res.status(500).json({ error: 'Failed to add category' });
+  }
+});
 app.get('/getCategorys', getCategorys);
 
 /**

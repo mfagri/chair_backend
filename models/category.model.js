@@ -4,8 +4,9 @@ const prisma = new PrismaClient();
 
 async function addCategory(req, res) {
   try {
+    console.log(req.body)
     // Assuming the request body contains the data to add
-    const { name, icon } = req.body;
+    const { name, icon,file } = req.body;
 
     // Use Prisma or your ORM to create a new category
     const category = await prisma.category.create({
@@ -26,6 +27,7 @@ async function addCategory(req, res) {
 
 async function getCategorys(req,res){
   try{
+
     const categorys = await prisma.category.findMany(
       {
         include:{
