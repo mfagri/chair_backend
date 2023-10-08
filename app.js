@@ -162,12 +162,35 @@ const product1 = {
   category: "Wooden Chairs",
   color: ["black","white","red","gray"],
   price: 99.99,
-  images:["https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg","https://i.pinimg.com/474x/88/8c/49/888c49267816f53c3806f7d561fb9b86.jpg","https://i.pinimg.com/564x/b9/6c/48/b96c48e3eb737985743a78593eabaf43.jpg","https://i.pinimg.com/474x/c9/e5/a3/c9e5a38fce41ebc13bb92fbac9cf3cb6.jpg"],
-  is3d:true,
-  modules:[],
+  data:{
+    images:[
+      {
+        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d:true,
+        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+      },
+      {
+        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d:true,
+        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+      },
+      {
+        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d:true,
+        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+      },
+      {
+        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d:true,
+        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+      },
+    ],
+  }
   
 }
+app.post("/api/add/categories/produt",async(req,res)=>{
 
+})
 /**
  * @swagger
  * /api/categories:
@@ -185,7 +208,7 @@ app.get("/api/categories", async (req, res) => {
       name: "Wooden",
       icon:  icons["wooden-chair-chair-svgrepo-com"],
        // Replace with the actual SVG icon wooden
-       produxts:[
+       products:[
         product1,
         product1,
         product1,
@@ -194,7 +217,7 @@ app.get("/api/categories", async (req, res) => {
     {
       name: "Sofa",
       icon:  icons["sofa-free-4-svgrepo-com"], // Replace with the actual SVG icon wooden
-      produxts:[
+      products:[
         product1,
         product1,
         product1,
@@ -203,7 +226,7 @@ app.get("/api/categories", async (req, res) => {
     {
       name: "Armchair",
       icon: icons["armchair-2-svgrepo-com"], // Replace with the actual SVG icon for metal
-      produxts:[
+      products:[
         product1,
         product1,
         product1,
@@ -212,7 +235,7 @@ app.get("/api/categories", async (req, res) => {
     {
       name: "Deck",
       icon: icons["deck-chair-svgrepo-com"], // Replace with the actual SVG icon for plastic
-      produxts:[
+      products:[
         product1,
         product1,
         product1,
@@ -221,7 +244,7 @@ app.get("/api/categories", async (req, res) => {
     {
       name: "Desk",
       icon: icons["desk-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for office
-      produxts:[
+      products:[
         product1,
         product1,
         product1,
@@ -230,7 +253,7 @@ app.get("/api/categories", async (req, res) => {
     {
       name: "Dining",
       icon: icons["chair-dining-svgrepo-com"], // Replace with the actual SVG icon for dining
-      produxts:[
+      products:[
         product1,
         product1,
         product1,
@@ -239,7 +262,7 @@ app.get("/api/categories", async (req, res) => {
     {
       name: "Wing",
       icon: icons["wing-chair-svgrepo-com"],
-      produxts:[
+      products:[
         product1,
         product1,
         product1,
@@ -248,7 +271,7 @@ app.get("/api/categories", async (req, res) => {
     {
       name: "Student",
       icon: icons["student-chair-with-desk-svgrepo-com"],
-      produxts:[
+      products:[
         product1,
         product1,
         product1,
