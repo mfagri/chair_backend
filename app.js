@@ -1,16 +1,20 @@
 const express = require("express");
 const passport = require("passport");
+const multer = require('multer');
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const expressSession = require("express-session");
 const swaggerUi = require("swagger-ui-express");
+const bodyParser = require('body-parser');
 const swaggerJSDoc = require("swagger-jsdoc");
 require("dotenv").config();
 const path = require("path");
 const fs = require("fs").promises; 
 const app = express();
-
+app.use(bodyParser.json());
 const clientid = process.env.clientID;
 const secret = process.env.clientSecret;
+const { addCategory } = require('./models/category.model.js');
+const {getCategorys} = require('./models/category.model.js');
 
 // Define your Swagger options
 const swaggerOptions = {
@@ -68,7 +72,19 @@ passport.deserializeUser((user, done) => {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // ...
-
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './icons/'); // Uploads will be stored in the "uploads" directory
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const extension = path.extname(file.originalname);
+    cb(null, `${timestamp}${extension}`);
+  },
+});
+const upload = multer({ storage });
+app.use('/icons/', express.static('icons'));
+//
 // Use Swagger documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -125,6 +141,8 @@ app.get("/dashboard", (req, res) => {
   // Display the user's dashboard.
   res.send(`Welcome, ${req.user.displayName}!`);
 });
+app.post('/addCategory', addCategory);
+app.get('/getCategorys', getCategorys);
 
 /**
  * @swagger
@@ -191,6 +209,7 @@ const product1 = {
 app.post("/api/add/categories/produt",async(req,res)=>{
 
 })
+
 /**
  * @swagger
  * /api/categories:

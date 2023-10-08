@@ -1,30 +1,50 @@
-// schema.prisma
+// categoryRoutes.js
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-// model Category {
-//   id    Int    @id @default(autoincrement())
-//   name  String
-//   icon  String // Assuming you store the icon as a URL or file path
-//   products Product[]
-// }
+async function addCategory(req, res) {
+  try {
+    // Assuming the request body contains the data to add
+    const { name, icon } = req.body;
 
-// model Product {
-//   id        Int      @id @default(autoincrement())
-//   name      String
-//   category  Category @relation(fields: [categoryId], references: [id])
-//   categoryId Int
-//   // Define other fields for the Product model as in the previous schema
-//   price     Float
-//   data      Json
-//   images    Image[]
-// }
+    // Use Prisma or your ORM to create a new category
+    const category = await prisma.category.create({
+      data: {
+        name,
+        icon,
+      },
+    });
 
-// model Image {
-//   id        Int     @id @default(autoincrement())
-//   image     String
-//   is3d      Boolean
-//   model     String
-//   productId Int
-//   product   Product @relation(fields: [productId], references: [id])
-// }
-import express from 'express'
-import { PrismaClient } from '@prisma/client'
+    // Respond with the created category
+    res.json(category);
+  } catch (error) {
+    console.error('Error adding category:', error);
+    res.status(500).json({ error: 'Failed to add category' });
+  }
+}
+
+
+async function getCategorys(req,res){
+  try{
+    const categorys = await prisma.category.findMany(
+      {
+        include:{
+          products:true,
+          
+        }
+      }
+    );
+    res.json(categorys);
+  }
+  catch(e)
+  {
+    console.error('Error adding category:', error);
+    res.status(500).json({ error: 'Failed to add category' });
+  }
+}
+
+
+module.exports = {
+  addCategory,
+  getCategorys
+};
