@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Products</title>
+</head>
+<body>
+  <h1>Add Products</h1>
+  <form id="productForm">
+    <div>
+      <label for="name">Product Name:</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+      <label for="price">Price:</label>
+      <input type="number" id="price" name="price" step="0.01" required>
+    </div>
+    <div id="colorsContainer">
+      <h2>Colors</h2>
+      <button type="button" id="addColor">Add Color</button>
+    </div>
+    <div id="modelsContainer">
+      <h2>Product Models</h2>
+      <button type="button" id="addModel">Add Model</button>
+    </div>
+    <button type="button" id="addProduct">Add Product</button>
+  </form>
+
+  <script>
+    // Function to add a color input field when the "Add Color" button is clicked
+    document.getElementById("addColor").addEventListener("click", function () {
+      const colorsContainer = document.getElementById("colorsContainer");
+      const colorField = document.createElement("div");
+
+      colorField.innerHTML = `
+        <div>
+          <label for="color">Color:</label>
+          <input type="text" class="color" name="colors[]" required>
+        </div>
+      `;
+
+      colorsContainer.appendChild(colorField);
+    });
+
+    // Function to add a product model input fields when the "Add Model" button is clicked
+    document.getElementById("addModel").addEventListener("click", function () {
+      const modelsContainer = document.getElementById("modelsContainer");
+      const modelFields = document.createElement("div");
+
+      modelFields.innerHTML = `
+        <h3>Model Details</h3>
+        <div>
+          <label for="model">Model Name:</label>
+          <input type="text" class="model-name" name="model-name[]" required>
+        </div>
+        <div>
+          <label for="image">Image:</label>
+          <input type="file" class="model-image" name="image" accept="image/*">
+        </div>
+        <div>
+          <label for="modelFile">Model File:</label>
+          <input type="file" class="model-file" name="image" accept=".obj, .stl, .glb">
+        </div>
+      `;
+
+      modelsContainer.appendChild(modelFields);
+    });
+
+    // Function to add a product when the "Add Product" button is clicked
+    document.getElementById("addProduct").addEventListener("click", function () {
+      const form = document.getElementById("productForm");
+      const name = form.elements.name.value;
+      const price = form.elements.price.value;
+
+      // Collect color data
+      const colors = Array.from(document.querySelectorAll(".color")).map(input => input.value);
+
+      // Collect product model data
+      const modelNames = Array.from(document.querySelectorAll(".model-name")).map(input => input.value);
+      const modelImages = Array.from(document.querySelectorAll(".model-image")).map(input => input.files[0]);
+      const modelFiles = Array.from(document.querySelectorAll(".model-file")).map(input => input.files[0]);
+
+      // You can send this data to your server using AJAX or fetch as shown in the previous example
+
+      // Example of sending model data to the server (assuming you have a /createProduct/:categoryId endpoint):
+      fetch("http://localhost:3000/createProduct/10", {
+        method: "POST",
+        body: new FormData(form), // Automatically sets "Content-Type" to "multipart/form-data"
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Product created:", data);
+          // You can add code to display a success message or reset the form here
+        })
+        .catch(error => {
+          console.error("Error creating product:", error);
+          // You can add code to display an error message here
+        });
+    });
+  </script>
+</body>
+</html>
+

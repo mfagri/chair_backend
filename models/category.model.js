@@ -69,32 +69,17 @@ async function getCategorys(req,res){
     res.status(500).json({ error: 'Failed to add category' });
   }
 }
-async function createProduct(categoryId) {
+async function createProduct(categoryId,colors,name,price,images,models) {
   try {
     const product = await prisma.product.create({
       data: {
-        name: 'Product Name',
+        name: name,
         categoryId: categoryId, // Replace with the actual category ID
-        price: 29.99, // Replace with the actual price
-        images: {
-          create: [
-            {
-              image: 'image_url_1.jpg', // Replace with the actual image URL
-              is3d: false, // Replace with the actual value
-              model: 'model_name_1', // Replace with the actual model name
-            },
-            {
-              image: 'image_url_2.jpg', // Replace with the actual image URL
-              is3d: true, // Replace with the actual value
-              model: 'model_name_2', // Replace with the actual model name
-            },
-            // Add more images as needed
-          ],
-        },
-      },
-      include: {
-        images: true, // Include the images associated with the product in the result
-      },
+        price: parseFloat(price), // Replace with the actual price
+        colors:colors,
+        imagePath:images,
+        modelPath:models
+      }
     });
 
     console.log('Product created with images:', product);
@@ -112,9 +97,8 @@ async function getProductById(productId) {
       },
       include: {
         category: true, // Include the category details if needed
-        images: true,   // Include the images associated with the product
       },
-    });
+    }); 
 
     if (!product) {
       console.log('Product not found');

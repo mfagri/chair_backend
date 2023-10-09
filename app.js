@@ -6,10 +6,12 @@ const expressSession = require("express-session");
 const swaggerUi = require("swagger-ui-express");
 const bodyParser = require("body-parser");
 const swaggerJSDoc = require("swagger-jsdoc");
+const cors = require('cors');
 require("dotenv").config();
 const path = require("path");
 const fs = require("fs").promises;
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 const clientid = process.env.clientID;
 const secret = process.env.clientSecret;
@@ -20,6 +22,13 @@ const { createProduct } = require("./models/category.model.js");
 const { getCategorys } = require("./models/category.model.js");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const corsOptions = {
+  origin: "*",
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Define your Swagger options
 const swaggerOptions = {
@@ -44,6 +53,17 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads/"); // Uploads will be stored in the "uploads" directory
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const extension = path.extname(file.originalname);
+    cb(null, `${timestamp}${extension}`);
+  },
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -96,81 +116,46 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ...
 
-// Define your routes with Swagger documentation
-/**
- * @swagger
- * /auth/google:
- *   get:
- *     summary: Authenticate with Google
- *     description: Authenticate using Google OAuth.
- *     responses:
- *       200:
- *         description: Redirects to Google login page.
- */
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-/**
- * @swagger
- * /auth/google/callback:
- *   get:
- *     summary: Google OAuth Callback
- *     description: Callback URL for Google OAuth.
- *     responses:
- *       302:
- *         description: Redirects to the dashboard upon successful authentication.
- *       401:
- *         description: Authentication failure redirect.
- */
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    // Redirect to the desired route after successful authentication.
-    res.redirect("/dashboard");
-  }
-);
-
-/**
- * @swagger
- * /dashboard:
- *   get:
- *     summary: User Dashboard
- *     description: Display the user's dashboard.
- *     responses:
- *       200:
- *         description: User dashboard page.
- */
-app.get("/dashboard", (req, res) => {
-  // Display the user's dashboard.
-  res.send(`Welcome, ${req.user.displayName}!`);
-});
-// app.post('/addCategory', addCategory);
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads/"); // Uploads will be stored in the "uploads" directory
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const extension = path.extname(file.originalname);
-    cb(null, `${timestamp}${extension}`);
-  },
-});
-
 const upload = multer({ storage });
 
 // Serve static files in the "uploads" directory (optional)
 app.use("/uploads", express.static("uploads"));
 app.post("/addCategory", upload.single("icon"), async (req, res) => {
-  res.json(addCategory(req,res));
+  res.json(addCategory(req, res));
 });
 app.get("/getCategorys", getCategorys);
-app.post("/createProduct/:categoryId", (req, res) => {
-  const  categoryid = parseInt(req.params.categoryId);
-  res.send(createProduct(categoryid));
-});
+
+app.post(
+  "/createProduct/:categoryId",
+  upload.fields([
+    { name: "image", maxCount: 4 },
+    { name: "model", maxCount: 4 },
+  ]),
+  (req, res) => {
+    console.log("Req BODDY", req.files);
+    console.log(" the BODDY", req.body);
+
+    const { name, price, colors } = req.body;
+    const data = req.files.image;
+    let images = [];
+    let models = [];
+    var i = 0;
+    data.map((obj)=>{
+      console.log(i);
+      images[i] = "";
+      models[i]="";
+      const nametype = obj.mimetype.toString()
+      if(nametype.includes("model") || nametype.includes("octet-stream"))
+        models[i++] = obj.path
+      else
+        images[i++] = obj.path
+      // i++;
+    });
+    i = 0;
+    const categoryid = parseInt(req.params.categoryId);
+    res.send(createProduct(categoryid,colors,name,price,images,models));
+  }
+);
 app.get("/getProductById/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   console.log(id);
@@ -182,7 +167,7 @@ app.get("/getProductById/:id", async (req, res) => {
  * /api/products:
  *   get:
  *     summary: Get Products
- *     description: Handle GET request for products.
+ *     description: Hanƒdle GET request for products.
  *     responses:
  *       200:
  *         description: Returns a JSON response with product information.
@@ -191,7 +176,7 @@ app.get("/api/products", (req, res) => {
   // Handle GET request for products
   res.json({ message: "Get products" });
 });
-async function loadIcons() { 
+async function loadIcons() {
   const icons = {
     "wooden-chair-chair-svgrepo-com": await iconGenerate(
       "wooden-chair-chair-svgrepo-com"
