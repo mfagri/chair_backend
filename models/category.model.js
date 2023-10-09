@@ -69,6 +69,27 @@ async function getCategorys(req,res){
     res.status(500).json({ error: 'Failed to add category' });
   }
 }
+async function getCategorybyId(id){
+  try{
+    
+    const category = await prisma.category.findMany(
+      {
+        where:{
+          id:id
+        },
+        include:{
+          products:true,
+          
+        }
+      }
+    );
+    return category;
+  }
+  catch(e)
+  {
+    console.error('Error adding category:', error);
+  }
+}
 async function createProduct(categoryId,colors,name,price,images,models) {
   try {
     const product = await prisma.product.create({
@@ -113,9 +134,20 @@ async function getProductById(productId) {
     await prisma.$disconnect(); // Disconnect from the database when done
   }
 }
+
+async function getAllProduct(){
+  try{
+    const products = await prisma.product.findMany();
+    return products;
+  }
+  catch(e)
+  {}
+}
 module.exports = {
   addCategory,
   getCategorys,
   createProduct,
-  getProductById
+  getProductById,
+  getAllProduct,
+  getCategorybyId
 };

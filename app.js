@@ -15,9 +15,9 @@ app.use(cors());
 app.use(bodyParser.json());
 const clientid = process.env.clientID;
 const secret = process.env.clientSecret;
-// const {getProductById} = require('./models/category.model.js');
+const {getAllProduct} = require('./models/category.model.js');
 const { getProductById, addCategory } = require("./models/category.model.js");
-
+const {getCategorybyId} = require('./models/category.model.js');
 const { createProduct } = require("./models/category.model.js");
 const { getCategorys } = require("./models/category.model.js");
 const { PrismaClient } = require("@prisma/client");
@@ -124,7 +124,13 @@ app.post("/addCategory", upload.single("icon"), async (req, res) => {
   res.json(addCategory(req, res));
 });
 app.get("/getCategorys", getCategorys);
-
+app.get("/getAllProduct",async (req,res)=>{
+  res.send(await  getAllProduct());
+});
+app.get("/getCategorybyId/:id",async (req,res)=>{
+  const id = parseInt(req.params.id);
+  res.send(await getCategorybyId(id));
+})
 app.post(
   "/createProduct/:categoryId",
   upload.fields([
@@ -145,7 +151,7 @@ app.post(
       images[i] = "";
       models[i]="";
       const nametype = obj.mimetype.toString()
-      if(nametype.includes("model") || nametype.includes("octet-stream"))
+      if(!nametype.includes("image"))
         models[i++] = obj.path
       else
         images[i++] = obj.path

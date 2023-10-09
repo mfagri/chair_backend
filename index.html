@@ -26,6 +26,7 @@
     </div>
     <button type="button" id="addProduct">Add Product</button>
   </form>
+  <div id="errorContainer"></div> <!-- Container for displaying error messages -->
 
   <script>
     // Function to add a color input field when the "Add Color" button is clicked
@@ -51,10 +52,6 @@
       modelFields.innerHTML = `
         <h3>Model Details</h3>
         <div>
-          <label for="model">Model Name:</label>
-          <input type="text" class="model-name" name="model-name[]" required>
-        </div>
-        <div>
           <label for="image">Image:</label>
           <input type="file" class="model-image" name="image" accept="image/*">
         </div>
@@ -77,9 +74,15 @@
       const colors = Array.from(document.querySelectorAll(".color")).map(input => input.value);
 
       // Collect product model data
-      const modelNames = Array.from(document.querySelectorAll(".model-name")).map(input => input.value);
       const modelImages = Array.from(document.querySelectorAll(".model-image")).map(input => input.files[0]);
       const modelFiles = Array.from(document.querySelectorAll(".model-file")).map(input => input.files[0]);
+
+      // Check if the number of colors and models match
+      if (colors.length !== modelImages.length) {
+        const errorContainer = document.getElementById("errorContainer");
+        errorContainer.innerHTML = "<p>Error: The number of colors and models must match.</p>";
+        return; // Exit the function without submitting the form
+      }
 
       // You can send this data to your server using AJAX or fetch as shown in the previous example
 
@@ -101,4 +104,3 @@
   </script>
 </body>
 </html>
-
