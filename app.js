@@ -1,21 +1,24 @@
 const express = require("express");
 const passport = require("passport");
-const multer = require('multer');
+const multer = require("multer");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const expressSession = require("express-session");
 const swaggerUi = require("swagger-ui-express");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const swaggerJSDoc = require("swagger-jsdoc");
 require("dotenv").config();
 const path = require("path");
-const fs = require("fs").promises; 
+const fs = require("fs").promises;
 const app = express();
 app.use(bodyParser.json());
 const clientid = process.env.clientID;
 const secret = process.env.clientSecret;
-const { addCategory } = require('./models/category.model.js');
-const {getCategorys} = require('./models/category.model.js');
-const { PrismaClient } = require('@prisma/client');
+// const {getProductById} = require('./models/category.model.js');
+const { getProductById, addCategory } = require("./models/category.model.js");
+
+const { createProduct } = require("./models/category.model.js");
+const { getCategorys } = require("./models/category.model.js");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // Define your Swagger options
@@ -87,7 +90,7 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 // const upload = multer({ storage });
 // app.use('/icons/', express.static('icons'));
 //
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 // Use Swagger documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -147,7 +150,7 @@ app.get("/dashboard", (req, res) => {
 // app.post('/addCategory', addCategory);
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './uploads/'); // Uploads will be stored in the "uploads" directory
+    cb(null, "./uploads/"); // Uploads will be stored in the "uploads" directory
   },
   filename: (req, file, cb) => {
     const timestamp = Date.now();
@@ -159,33 +162,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Serve static files in the "uploads" directory (optional)
-app.use('/uploads', express.static('uploads'));
-
-// Set up a route for uploading files and adding a category
-app.post('/addCategory', upload.single('icon'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-    }
-
-    const { name } = req.body;
-    const iconFilename = req.file.filename; // Get the filename of the uploaded icon
-
-    // Use Prisma or your ORM to create a new category with a reference to the uploaded icon
-    const category = await prisma.category.create({
-      data: {
-        name,
-        icon: `/uploads/${iconFilename}`, // Store the file path in the database
-      },
-    });
-
-    return res.json(category);
-  } catch (error) {
-    console.error('Error adding category:', error);
-    return res.status(500).json({ error: 'Failed to add category' });
-  }
+app.use("/uploads", express.static("uploads"));
+app.post("/addCategory", upload.single("icon"), async (req, res) => {
+  res.json(addCategory(req,res));
 });
-app.get('/getCategorys', getCategorys);
+app.get("/getCategorys", getCategorys);
+app.post("/createProduct/:categoryId", (req, res) => {
+  const  categoryid = parseInt(req.params.categoryId);
+  res.send(createProduct(categoryid));
+});
+app.get("/getProductById/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  console.log(id);
+  res.send(await getProductById(id));
+});
 
 /**
  * @swagger
@@ -201,15 +191,21 @@ app.get("/api/products", (req, res) => {
   // Handle GET request for products
   res.json({ message: "Get products" });
 });
-async function loadIcons() {
+async function loadIcons() { 
   const icons = {
-    "wooden-chair-chair-svgrepo-com": await iconGenerate("wooden-chair-chair-svgrepo-com"),
+    "wooden-chair-chair-svgrepo-com": await iconGenerate(
+      "wooden-chair-chair-svgrepo-com"
+    ),
     "armchair-2-svgrepo-com": await iconGenerate("armchair-2-svgrepo-com"),
     "deck-chair-svgrepo-com": await iconGenerate("deck-chair-svgrepo-com"),
-    "desk-chair-chair-svgrepo-com": await iconGenerate("desk-chair-chair-svgrepo-com"),
+    "desk-chair-chair-svgrepo-com": await iconGenerate(
+      "desk-chair-chair-svgrepo-com"
+    ),
     "chair-dining-svgrepo-com": await iconGenerate("chair-dining-svgrepo-com"),
     "wing-chair-svgrepo-com": await iconGenerate("wing-chair-svgrepo-com"),
-    "student-chair-with-desk-svgrepo-com": await iconGenerate("student-chair-with-desk-svgrepo-com"),
+    "student-chair-with-desk-svgrepo-com": await iconGenerate(
+      "student-chair-with-desk-svgrepo-com"
+    ),
     "sofa-free-4-svgrepo-com": await iconGenerate("sofa-free-4-svgrepo-com"),
     // "wooden-chair-chair-svgrepo-com": await iconGenerate("wooden-chair-chair-svgrepo-com"),
     // "wooden-chair-chair-svgrepo-com": await iconGenerate("wooden-chair-chair-svgrepo-com"),
@@ -218,40 +214,45 @@ async function loadIcons() {
   return icons;
 }
 const product1 = {
-  id :1,
+  id: 1,
   name: "Classic Wooden Chair",
   category: "Wooden Chairs",
-  color: ["black","white","red","gray"],
+  color: ["black", "white", "red", "gray"],
   price: 99.99,
-  data:{
-    images:[
+  data: {
+    images: [
       {
-        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
-        is3d:true,
-        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+        image:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d: true,
+        model:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
       },
       {
-        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
-        is3d:true,
-        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+        image:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d: true,
+        model:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
       },
       {
-        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
-        is3d:true,
-        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+        image:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d: true,
+        model:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
       },
       {
-        image:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
-        is3d:true,
-        model:"https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg"
+        image:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
+        is3d: true,
+        model:
+          "https://i.pinimg.com/564x/10/0d/5a/100d5a0d731e27a535a573f1ae1b581d.jpg",
       },
     ],
-  }
-  
-}
-app.post("/api/add/categories/produt",async(req,res)=>{
-
-})
+  },
+};
+app.post("/api/add/categories/produt", async (req, res) => {});
 
 /**
  * @swagger
@@ -268,76 +269,44 @@ app.get("/api/categories", async (req, res) => {
   categories = [
     {
       name: "Wooden",
-      icon:  icons["wooden-chair-chair-svgrepo-com"],
-       // Replace with the actual SVG icon wooden
-       products:[
-        product1,
-        product1,
-        product1,
-       ]
+      icon: icons["wooden-chair-chair-svgrepo-com"],
+      // Replace with the actual SVG icon wooden
+      products: [product1, product1, product1],
     },
     {
       name: "Sofa",
-      icon:  icons["sofa-free-4-svgrepo-com"], // Replace with the actual SVG icon wooden
-      products:[
-        product1,
-        product1,
-        product1,
-       ]
+      icon: icons["sofa-free-4-svgrepo-com"], // Replace with the actual SVG icon wooden
+      products: [product1, product1, product1],
     },
     {
       name: "Armchair",
       icon: icons["armchair-2-svgrepo-com"], // Replace with the actual SVG icon for metal
-      products:[
-        product1,
-        product1,
-        product1,
-       ]
+      products: [product1, product1, product1],
     },
     {
       name: "Deck",
       icon: icons["deck-chair-svgrepo-com"], // Replace with the actual SVG icon for plastic
-      products:[
-        product1,
-        product1,
-        product1,
-       ]
+      products: [product1, product1, product1],
     },
     {
       name: "Desk",
       icon: icons["desk-chair-chair-svgrepo-com"], // Replace with the actual SVG icon for office
-      products:[
-        product1,
-        product1,
-        product1,
-       ]
+      products: [product1, product1, product1],
     },
     {
       name: "Dining",
       icon: icons["chair-dining-svgrepo-com"], // Replace with the actual SVG icon for dining
-      products:[
-        product1,
-        product1,
-        product1,
-       ]
+      products: [product1, product1, product1],
     },
     {
       name: "Wing",
       icon: icons["wing-chair-svgrepo-com"],
-      products:[
-        product1,
-        product1,
-        product1,
-       ] // Replace with the actual SVG icon for lounge
+      products: [product1, product1, product1], // Replace with the actual SVG icon for lounge
     },
     {
       name: "Student",
       icon: icons["student-chair-with-desk-svgrepo-com"],
-      products:[
-        product1,
-        product1,
-        product1,
-       ] // Replace with the actual SVG icon for outdoor chairs
+      products: [product1, product1, product1], // Replace with the actual SVG icon for outdoor chairs
     },
     // Add more categories as needed
   ];
@@ -373,7 +342,7 @@ app.get("/api/icons/:iconName", (req, res) => {
       res.status(404).send("Icon not found");
     } else {
       // Send the SVG icon content as a response
-     
+
       res.send(data);
     }
   });
@@ -382,7 +351,7 @@ app.get("/api/icons/:iconName", (req, res) => {
 async function iconGenerate(iconName) {
   const iconFileName = `${iconName}.svg`;
   const iconFilePath = path.join(__dirname, "icons", iconFileName);
-  
+
   try {
     const data = await fs.readFile(iconFilePath, "utf8");
     return data.toString();

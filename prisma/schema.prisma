@@ -25,7 +25,7 @@ model Product {
   categoryId Int
   // Define other fields for the Product model as in the previous schema
   price     Float
-  data      Json
+  // data      Json
   images    Image[]
 }
 
