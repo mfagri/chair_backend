@@ -42,34 +42,14 @@ async function removebackground(name)
     await output.webp().toFile("test-output.webp");
     
     // optionally you can use .trim() too!
-    await output.trim().webp().toFile(`/uploads/${randomName}`);
+    await output.trim().webp().toFile(`uploads/${randomName}`);
     console.log(output.options. fileOut)
     return output.options. fileOut;
 } catch (error) {
     console.error("Error in image processing:", error);
 }
 }
-// (async () => { 
-//   try {  
-//       const input = sharp("uploads/1696978968137.jpeg");
-      
-//       // optional arguments
-//       const rembg = new Rembg({
-//           logging: true,
-//           // modelPath: u2NetModelPath,
-//       });
-      
-//       const output = await rembg.remove(input);
-      
-//       await output.webp().toFile("test-output.webp");
-      
-//       // optionally you can use .trim() too!
-//       await output.trim().webp().toFile("uploads/test-output-trimmed.webp");
-//       console.log(output.options. fileOut)
-//   } catch (error) {
-//       console.error("Error in image processing:", error);
-//   }
-// })();
+
 const prisma = new PrismaClient();
 const corsOptions = {
   origin: "*",
