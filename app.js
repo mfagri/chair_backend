@@ -23,26 +23,53 @@ const { getCategorys } = require("./models/category.model.js");
 const { PrismaClient } = require("@prisma/client");
 const { Rembg } = require("rembg-node");
 const sharp = require("sharp");
+const uuid = require('uuid');
 
 // uploads/1696975914057.jpeg
-
-(async () => {
-	const input = sharp("uploads/1696976892103.png");
-
-  console.log(input)
-	// optional arguments
-	const rembg = new Rembg({
-		logging: true,
-	});
-  
-  
-	const output = await rembg.remove(input);
-
-	await output.webp().toFile("test-output.webp");
-
-	// optionally you can use .trim() too!
-	await output.trim().webp().toFile("test-output-trimmed.webp");
-})();
+async function removebackground(name)
+{
+  try {  
+    const input = sharp(name);
+    const randomName = `${uuid.v4()}.webp`;
+    // optional arguments
+    const rembg = new Rembg({
+        logging: true,
+        // modelPath: u2NetModelPath,
+    });
+    
+    const output = await rembg.remove(input);
+    
+    await output.webp().toFile("test-output.webp");
+    
+    // optionally you can use .trim() too!
+    await output.trim().webp().toFile(`/uploads/${randomName}`);
+    console.log(output.options. fileOut)
+    return output.options. fileOut;
+} catch (error) {
+    console.error("Error in image processing:", error);
+}
+}
+// (async () => { 
+//   try {  
+//       const input = sharp("uploads/1696978968137.jpeg");
+      
+//       // optional arguments
+//       const rembg = new Rembg({
+//           logging: true,
+//           // modelPath: u2NetModelPath,
+//       });
+      
+//       const output = await rembg.remove(input);
+      
+//       await output.webp().toFile("test-output.webp");
+      
+//       // optionally you can use .trim() too!
+//       await output.trim().webp().toFile("uploads/test-output-trimmed.webp");
+//       console.log(output.options. fileOut)
+//   } catch (error) {
+//       console.error("Error in image processing:", error);
+//   }
+// })();
 const prisma = new PrismaClient();
 const corsOptions = {
   origin: "*",
@@ -160,7 +187,7 @@ app.post(
     { name: "model", maxCount: 4 },
     { name: "imageproduct", maxCount: 1 },
   ]),
-  (req, res) => {
+  async (req, res) => {
     console.log("Req BODDY", req.files);
     console.log(" the BODDY", req.body);
 
@@ -168,7 +195,7 @@ app.post(
     const data = req.files.image;
     let images = [];
     let models = []; 
-    let image = req.files.imageproduct[0].path;
+    let image = await removebackground( req.files.imageproduct[0].path);
     var i = 0;
     data.map((obj)=>{
       console.log(i);
