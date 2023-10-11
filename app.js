@@ -21,6 +21,28 @@ const {getCategorybyId} = require('./models/category.model.js');
 const { createProduct } = require("./models/category.model.js");
 const { getCategorys } = require("./models/category.model.js");
 const { PrismaClient } = require("@prisma/client");
+const { Rembg } = require("rembg-node");
+const sharp = require("sharp");
+
+// uploads/1696975914057.jpeg
+
+(async () => {
+	const input = sharp("uploads/1696976892103.png");
+
+  console.log(input)
+	// optional arguments
+	const rembg = new Rembg({
+		logging: true,
+	});
+  
+  
+	const output = await rembg.remove(input);
+
+	await output.webp().toFile("test-output.webp");
+
+	// optionally you can use .trim() too!
+	await output.trim().webp().toFile("test-output-trimmed.webp");
+})();
 const prisma = new PrismaClient();
 const corsOptions = {
   origin: "*",
@@ -136,6 +158,7 @@ app.post(
   upload.fields([
     { name: "image", maxCount: 4 },
     { name: "model", maxCount: 4 },
+    { name: "imageproduct", maxCount: 1 },
   ]),
   (req, res) => {
     console.log("Req BODDY", req.files);
@@ -144,7 +167,8 @@ app.post(
     const { name, price, colors } = req.body;
     const data = req.files.image;
     let images = [];
-    let models = [];
+    let models = []; 
+    let image = req.files.imageproduct[0].path;
     var i = 0;
     data.map((obj)=>{
       console.log(i);
@@ -159,7 +183,7 @@ app.post(
     });
     i = 0;
     const categoryid = parseInt(req.params.categoryId);
-    res.send(createProduct(categoryid,colors,name,price,images,models));
+    res.send(createProduct(categoryid,colors,name,price,images,models,image));
   }
 );
 app.get("/getProductById/:id", async (req, res) => {

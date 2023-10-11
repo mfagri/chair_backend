@@ -90,7 +90,7 @@ async function getCategorybyId(id){
     console.error('Error adding category:', error);
   }
 }
-async function createProduct(categoryId,colors,name,price,images,models) {
+async function createProduct(categoryId,colors,name,price,images,models,image) {
   try {
     const product = await prisma.product.create({
       data: {
@@ -98,6 +98,7 @@ async function createProduct(categoryId,colors,name,price,images,models) {
         categoryId: categoryId, // Replace with the actual category ID
         price: parseFloat(price), // Replace with the actual price
         colors:colors,
+        image:image,
         imagePath:images,
         modelPath:models
       }

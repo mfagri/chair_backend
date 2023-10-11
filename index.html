@@ -16,6 +16,10 @@
       <label for="price">Price:</label>
       <input type="number" id="price" name="price" step="0.01" required>
     </div>
+    <div>
+      <label for="image">Image:</label>
+      <input type="file" class="" name="imageproduct" accept="image/*">
+    </div>
     <div id="colorsContainer">
       <h2>Colors</h2>
       <button type="button" id="addColor">Add Color</button>
@@ -33,22 +37,22 @@
     document.getElementById("addColor").addEventListener("click", function () {
       const colorsContainer = document.getElementById("colorsContainer");
       const colorField = document.createElement("div");
-
+  
       colorField.innerHTML = `
         <div>
           <label for="color">Color:</label>
           <input type="text" class="color" name="colors[]" required>
         </div>
       `;
-
+  
       colorsContainer.appendChild(colorField);
     });
-
+  
     // Function to add a product model input fields when the "Add Model" button is clicked
     document.getElementById("addModel").addEventListener("click", function () {
       const modelsContainer = document.getElementById("modelsContainer");
       const modelFields = document.createElement("div");
-
+  
       modelFields.innerHTML = `
         <h3>Model Details</h3>
         <div>
@@ -60,34 +64,33 @@
           <input type="file" class="model-file" name="image" accept=".obj, .stl, .glb">
         </div>
       `;
-
+  
       modelsContainer.appendChild(modelFields);
     });
-
+  
     // Function to add a product when the "Add Product" button is clicked
     document.getElementById("addProduct").addEventListener("click", function () {
       const form = document.getElementById("productForm");
       const name = form.elements.name.value;
       const price = form.elements.price.value;
-
+  
       // Collect color data
       const colors = Array.from(document.querySelectorAll(".color")).map(input => input.value);
-
+  
       // Collect product model data
       const modelImages = Array.from(document.querySelectorAll(".model-image")).map(input => input.files[0]);
       const modelFiles = Array.from(document.querySelectorAll(".model-file")).map(input => input.files[0]);
-
-      // Check if the number of colors and models match
-      if (colors.length !== modelImages.length) {
-        const errorContainer = document.getElementById("errorContainer");
-        errorContainer.innerHTML = "<p>Error: The number of colors and models must match.</p>";
-        return; // Exit the function without submitting the form
-      }
-
+  
+      // Check if the number of colors and models match, considering undefined modelImages
+      // if (colors.length !== modelImages.length || modelImages.includes(undefined)) {
+      //   const errorContainer = document.getElementById("errorContainer");
+      //   errorContainer.innerHTML = "<p>Error: The number of colors and models must match.</p>";
+      //   return; // Exit the function without submitting the form
+      // }
+  
       // You can send this data to your server using AJAX or fetch as shown in the previous example
-
       // Example of sending model data to the server (assuming you have a /createProduct/:categoryId endpoint):
-      fetch("http://localhost:3000/createProduct/10", {
+      fetch("http://localhost:3000/createProduct/7", {
         method: "POST",
         body: new FormData(form), // Automatically sets "Content-Type" to "multipart/form-data"
       })
@@ -102,5 +105,6 @@
         });
     });
   </script>
+  
 </body>
 </html>

@@ -26,6 +26,7 @@ model Product {
   // Define other fields for the Product model as in the previous schema
   price     Float
   // data      Json
+  image String
   colors String[]
   imagePath String[]
   modelPath String[]
