@@ -11,6 +11,18 @@ datasource db {
 }
 
 
+
+model User {
+  id Int @id @default(autoincrement())
+  username String?
+  image String?
+  email String @unique
+  password String?
+   shoppingCarts ShoppingCart[]
+    orders        Order[] 
+    favoriteProduct FavoriteProduct[]
+  // location String
+}
 model Category {
   id    Int    @id @default(autoincrement())
   name  String
@@ -30,4 +42,37 @@ model Product {
   colors String[]
   imagePath String[]
   modelPath String[]
+  shoppingCarts  ShoppingCart[]
+  orders        Order[] 
+  favoriteProduct FavoriteProduct[]
+
+
+}
+
+
+model ShoppingCart {
+  id         Int    @id @default(autoincrement())
+  user       User   @relation(fields: [userId], references: [id])
+  userId     Int
+  product    Product @relation(fields: [productId], references: [id])
+  productId  Int
+  quantity   Int
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  products   Product[] // Use a JSON or JSONB field to store product details
+  quantities Int[]    // Use an array to store the quantity of each product
+  orderDate  DateTime
+  // Add other fields relevant to the order
+}
+
+model FavoriteProduct {
+  id         Int    @id @default(autoincrement())
+  user       User   @relation(fields: [userId], references: [id])
+  userId     Int
+  product    Product @relation(fields: [productId], references: [id])
+  productId  Int
 }

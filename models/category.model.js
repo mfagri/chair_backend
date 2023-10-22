@@ -1,30 +1,8 @@
-// categoryRoutes.js
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// app.post("/addCategory", upload.single("icon"), async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).send("No file uploaded.");
-//     }
 
-//     const { name } = req.body;
-//     const iconFilename = req.file.filename; // Get the filename of the uploaded icon
-
-//     // Use Prisma or your ORM to create a new category with a reference to the uploaded icon
-//     const category = await prisma.category.create({
-//       data: {
-//         name,
-//         icon: `/uploads/${iconFilename}`, // Store the file path in the database
-//       },
-//     });
-
-//     return res.json(category);
-//   } catch (error) {
-//     console.error("Error adding category:", error);
-//     return res.status(500).json({ error: "Failed to add category" });
-//   }
-// });
 
 async function addCategory(req,res){
   try {
