@@ -19,8 +19,6 @@ const FavoriteRoute = require("./routes/favorite");
 app.use("/api/", CategoryRoute);
 app.use("/api/",UserRoute);
 app.use("/api/",FavoriteRoute);
-
-
 app.use("/uploads", express.static("uploads"));
 
 // app.use(express.static(path.join(__dirname, "icons")));

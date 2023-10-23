@@ -9,6 +9,7 @@ const {
   getAllProduct,
   getCategorybyId,
 } = require("../controllers/categoryController");
+
 const { Rembg } = require("rembg-node");
 const sharp = require("sharp");
 const uuid = require("uuid");
@@ -67,7 +68,8 @@ Route.post("/addCategory", upload.single("icon"), async (req, res) => {
 
 Route.get("/getCategorys", getCategorys);
 
-Route.get("/getAllProduct", async (req, res) => {
+Route.get("/getAllProduct" ,async (req, res) => {
+  console.log(req.user);
   res.send(await getAllProduct());
 });
 

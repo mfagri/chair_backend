@@ -1,6 +1,8 @@
 const express = require("express");
 const Route = express.Router();
-
+const {auth} = require(
+  '../middleware/authMiddleware'
+)
 const {
   createuser,
   userfind,
@@ -21,8 +23,8 @@ Route.post("/signin", async (req, res) => {
     res.send(data);
   }
 });
-Route.get("/myuser", async (req, res) => {
-  res.send(await authenticateToken(req));
+Route.get("/myuser", auth,async (req, res) => {
+  res.send(req.user);
 });
 
 

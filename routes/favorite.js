@@ -1,6 +1,6 @@
 const express = require("express");
 const Route = express.Router();
-
+const { auth } = require("../middleware/authMiddleware");
 const {
   addtoFavorite,
   removefromFavorite,
@@ -8,24 +8,28 @@ const {
   isProductInFavorites,
 } = require("../controllers/favoriteController");
 
-Route.post("/addtofavorite", async (req, res) => {
+Route.post("/addtofavorite", auth, async (req, res) => {
   res.send(await addtoFavorite(req.body.data));
 });
 
-Route.post("/removefromfavorite", async (req, res) => {
+Route.post("/removefromfavorite", auth, async (req, res) => {
   res.send(await removefromFavorite(req.body.data));
 });
 
-Route.get("/getAllFavorites/:id", async (req, res) => {
+Route.get("/getAllFavorites/:id", auth, async (req, res) => {
   res.send(await getAllFavorites(parseInt(req.params.id)));
 });
-Route.get("/isProductInFavorites/:userid/:productid", async (req, res) => {
-  res.send(
-    await isProductInFavorites(
-      parseInt(req.params.userid),
-      parseInt(req.params.productid)
-    )
-  );
-});
+Route.get(
+  "/isProductInFavorites/:userid/:productid",
+  auth,
+  async (req, res) => {
+    res.send(
+      await isProductInFavorites(
+        parseInt(req.user.id),
+        parseInt(req.params.productid)
+      )
+    );
+  }
+);
 
 module.exports = Route;
