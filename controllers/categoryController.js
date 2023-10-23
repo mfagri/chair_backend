@@ -83,7 +83,7 @@ async function createProduct(categoryId,colors,name,price,images,models,image) {
       }
     });
 
-    console.log('Product created with images:', product);
+    // console.log('Product created with images:', product);
   } catch (error) {
     console.error('Error creating product with images:', error);
   } finally {
@@ -107,7 +107,7 @@ async function getProductById(productId) {
       return;
     }
 
-    console.log('Product details:', product);
+    // console.log('Product details:', product);
     return product;
   } catch (error) {
     console.error('Error getting product:', error);
