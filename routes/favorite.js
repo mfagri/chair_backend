@@ -23,12 +23,7 @@ Route.get(
   "/isProductInFavorites/:userid/:productid",
   auth,
   async (req, res) => {
-    res.send(
-      await isProductInFavorites(
-        parseInt(req.user.id),
-        parseInt(req.params.productid)
-      )
-    );
+    res.send(await isProductInFavorites(req));
   }
 );
 

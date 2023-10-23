@@ -47,7 +47,8 @@ async function getCategorys(req,res){
     res.status(500).json({ error: 'Failed to add category' });
   }
 }
-async function getCategorybyId(id){
+async function getCategorybyId(req){
+  const id = parseInt(req.params.id);
   try{
     
     const category = await prisma.category.findMany(
@@ -91,7 +92,8 @@ async function createProduct(categoryId,colors,name,price,images,models,image) {
   }
 }
 
-async function getProductById(productId) {
+async function getProductById(req) {
+  const productId = parseInt(req.params.id);
   try {
     const product = await prisma.product.findUnique({
       where: {

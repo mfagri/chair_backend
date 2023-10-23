@@ -68,14 +68,12 @@ Route.post("/addCategory", upload.single("icon"), async (req, res) => {
 
 Route.get("/getCategorys", getCategorys);
 
-Route.get("/getAllProduct" ,async (req, res) => {
-  console.log(req.user);
+Route.get("/getAllProduct", async (req, res) => {
   res.send(await getAllProduct());
 });
 
 Route.get("/getCategorybyId/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  res.send(await getCategorybyId(id));
+  res.send(await getCategorybyId(req));
 });
 
 Route.post(
@@ -108,8 +106,7 @@ Route.post(
 );
 
 Route.get("/getProductById/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  res.send(await getProductById(id));
+  res.send(await getProductById(req));
 });
 
 module.exports = Route;

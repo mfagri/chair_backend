@@ -2,8 +2,8 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function addtoFavorite(data) {
-  const userId =parseInt(data.userId) ;
-  const productId = parseInt(data.productId) ;
+  const userId = parseInt(data.userId);
+  const productId = parseInt(data.productId);
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const product = await prisma.product.findUnique({
@@ -29,7 +29,7 @@ async function addtoFavorite(data) {
 
 async function removefromFavorite(data) {
   try {
-    const userId = parseInt(data.userId) ;
+    const userId = parseInt(data.userId);
     const productId = parseInt(data.productId);
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const product = await prisma.product.findUnique({
@@ -81,22 +81,23 @@ async function getAllFavorites(userId) {
   }
 }
 
-async function isProductInFavorites(userId, productId) {
-	try {
-	  
-	  const favoriteProduct = await prisma.favoriteProduct.findFirst({
-		where: {
-		  userId: userId,
-		  productId: productId,
-		},
-	  });
-	  return !!favoriteProduct; 
-	} catch (error) {
-	  console.error(error);
-	  throw new Error("Error checking if the product is in favorites.");
-	}
+async function isProductInFavorites(req) {
+  try {
+    const userId = parseInt(req.user.id);
+    const productId = parseInt(req.params.productid);
+    const favoriteProduct = await prisma.favoriteProduct.findFirst({
+      where: {
+        userId: userId,
+        productId: productId,
+      },
+    });
+    return !!favoriteProduct;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error checking if the product is in favorites.");
   }
-  
+}
+
 module.exports = {
   addtoFavorite,
   removefromFavorite,
