@@ -1,16 +1,20 @@
 const { authenticateToken} = require('../controllers/userController');
 
-const auth =(req,res,next)=>{
+const auth = async (req,res,next)=>{
     console.log('in auth');
-    const user = authenticateToken(req);
+    const user = await authenticateToken(req);
     req.user = user;
     if(user)
     {
+        console.log(user.username);
         next();
         return;
     }
     else
+    {
+        console.log("Access denied, no token provided");
         res.send('Access denied, no token provided');
+    }
 };
 
 module.exports ={

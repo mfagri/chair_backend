@@ -24,6 +24,7 @@ Route.post("/signin", async (req, res) => {
   }
 });
 Route.get("/myuser", auth,async (req, res) => {
+  console.log("in myuser" + req.usr);
   res.send(req.user);
 });
 

@@ -16,8 +16,8 @@ Route.post("/removefromfavorite", auth, async (req, res) => {
   res.send(await removefromFavorite(req.body.data));
 });
 
-Route.get("/getAllFavorites/:id", auth, async (req, res) => {
-  res.send(await getAllFavorites(parseInt(req.params.id)));
+Route.get("/getAllFavorites", auth, async (req, res) => {
+  res.send(await getAllFavorites(parseInt(req.user.id)));
 });
 Route.get(
   "/isProductInFavorites/:userid/:productid",

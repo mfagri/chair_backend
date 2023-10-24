@@ -73,8 +73,9 @@ async function getAllFavorites(userId) {
         product: true,
       },
     });
-
+    console.log(favorites);
     return favorites;
+
   } catch (error) {
     console.error(error);
     throw new Error("Error fetching favorite products.");
